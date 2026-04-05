@@ -33,10 +33,11 @@ def reconcile_accounts(transactions1, transactions2):
     all_keys = set(groups1.keys()).union(set(groups2.keys()))
     
     for key in all_keys:
+        #se key nao existir, retorna vazio para evitar erro 
         group1 = groups1.get(key, [])
         group2 = groups2.get(key, [])
         
-        # Ordenar por data
+        # Ordenar por data (primeira "coluna")
         group1.sort(key=lambda x: x[0])
         group2.sort(key=lambda x: x[0])
         
@@ -45,14 +46,14 @@ def reconcile_accounts(transactions1, transactions2):
         matches2 = [False] * len(group2)
         
         # Matching
-        for i, t1 in enumerate(group1):
-            date1 = t1[0]
+        for i, tran1 in enumerate(group1):
+            date1 = tran1[0]
             
-            for j, t2 in enumerate(group2):
+            for j, tran2 in enumerate(group2):
                 if used[j]:
                     continue
                 
-                date2 = t2[0]
+                date2 = tran2[0]
                 
                 if abs((date1 - date2).days) <= 1:
                     used[j] = True
@@ -61,8 +62,9 @@ def reconcile_accounts(transactions1, transactions2):
                     break
         
         # Reconstruir resultado para lista 1
-        for i, t1 in enumerate(group1):
-            _, date_str, dept, value, beneficiary, original_idx = t1
+        for i, tran1 in enumerate(group1):
+            #ignoramos data que construimos no formato datetime ao usar o "_"
+            _, date_str, dept, value, beneficiary, original_idx = tran1
             status = "FOUND" if matches1[i] else "MISSING"
             
             result1[original_idx] = [
@@ -70,8 +72,9 @@ def reconcile_accounts(transactions1, transactions2):
             ]
         
         # Reconstruir resultado para lista 2
-        for j, t2 in enumerate(group2):
-            _, date_str, dept, value, beneficiary, original_idx = t2
+        for j, tran2 in enumerate(group2):
+            #ignoramos data que construimos no formato datetime ao usar o "_"
+            _, date_str, dept, value, beneficiary, original_idx = tran2
             status = "FOUND" if matches2[j] else "MISSING"
             
             result2[original_idx] = [
