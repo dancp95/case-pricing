@@ -1,9 +1,24 @@
+
+"""
+Script para exercício 1: reconciliar duas listas de transações
+"""
+
 from datetime import datetime
 import csv
 from pathlib import Path
 from pprint import pprint
 
 def group_transactions(transactions):
+    """
+    Agrupa transações por chave (departamento, valor, beneficiário).
+    Assim só precisamos comparar transações das duas listas com mesma chave.
+
+    Retorna um dicionário:
+    chave -> lista de transações
+
+    Cada transação armazenada contém:
+    (data_convertida, data_original, dept, valor, beneficiário, índice_original)
+    """
     groups = {}
     
     for idx, row in enumerate(transactions):
@@ -22,6 +37,17 @@ def group_transactions(transactions):
 
 
 def reconcile_accounts(transactions1, transactions2):
+    """
+    Realiza a conciliação entre duas listas de transações.
+
+    Para cada transação, tenta encontrar uma correspondente na outra lista:
+    - Mesmo departamento, valor e beneficiário
+    - Data pode variar em até +/- 1 dia
+    - Cada transação pode ser usada apenas uma vez
+
+    Retorna duas listas com uma nova coluna:
+    'FOUND' ou 'MISSING'
+    """
     groups1 = group_transactions(transactions1)
     groups2 = group_transactions(transactions2)
     
@@ -83,7 +109,7 @@ def reconcile_accounts(transactions1, transactions2):
     
     return result1, result2
 
-
+#testando para exemplo do exercicio
 if __name__ == "__main__":
     transactions1 = list(csv.reader(Path('transactions1.csv').open()))
     transactions2 = list(csv.reader(Path('transactions2.csv').open()))
